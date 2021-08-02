@@ -64,6 +64,18 @@ $ sudo cp dht_sensor /usr/lib/telegraf/plugins/
   command = ["/usr/lib/telegraf/plugins/dht_sensor", "-config", "/etc/telegraf/telegraf-dht_sensor.config" ]
   signal = "none"
 ```
+* If you get an error `Error during call C.dial_DHTxx_and_read(): failed to open GPIO export for writing`, this means that the user you are running telegraf under does not have permissions to open `/sys/class/gpio/export`. To fix this, simply add your telegraf user into gpio group, and restart telegraf:
+```bash
+$ systemctl status telegraf 
+[...]
+Aug 02 14:43:59 pi telegraf[2419]: 2021-08-02T21:43:59Z E! [inputs.execd] stderr: "failed to gather metrics: Error during call C.dial_DHTxx_and_read(): failed to open GPIO export for writing"
+$ ls -l /sys/class/gpio/export
+-rwxrwx--- 1 root gpio 4096 Jul 31 20:17 /sys/class/gpio/export
+$ sudo usermod -a -G gpio telegraf
+$ sudo systemctl restart telegraf
+
+```
+
 ## Credits
 * This self-contained plugin is based on the documentations of [Execd Go Shim](https://github.com/influxdata/telegraf/blob/master/plugins/common/shim).
-* This plugin uses [Go-DHT](https://github.com/d2r2/go-dht) library, Most of the heavy lifting is done there. Huge kudos to the authors.
+* This plugin uses a fork of [Go-DHT](https://github.com/d2r2/go-dht) library. Most of the heavy lifting is done there. Huge kudos to the authors.
