@@ -18,10 +18,6 @@ Sample config (see plugin.conf in the repo):
     # Check your wiring if you are not sure
     data_pin = 4
 
-    # see https://github.com/d2r2/go-dht for the meaning of this one.
-    # TL/DR: play with this parameter    
-    boost_gpio_performance = true
-
     # number of retries in case of a failure
     number_of_retries = 3
     

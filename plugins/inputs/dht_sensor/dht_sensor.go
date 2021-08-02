@@ -5,6 +5,7 @@ import (
 	"strings"
 	// sensor imports:
 	"github.com/d2r2/go-dht"
+	logger "github.com/d2r2/go-logger"
 	// telegraf imports:
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
@@ -15,14 +16,14 @@ const measurement = "dht_sensors"
 type DhtSensor struct {
 	Sensor                string
 	DataPin               int     `toml:"data_pin"`
-	BoostGpioPerformance  bool    `toml:"boost_gpio_performance"`
-	Retries               int     `toml:"numbe_of_retries"`
+	Retries               int     `toml:"number_of_retries"`
 	RetryHumidityAbove    float32 `toml:"retry_humidity_above"`
 	RetryTemperatureAbove float32 `toml:"retry_temperature_above"`
 }
 
 func init() {
-	inputs.Add("net_irtt", func() telegraf.Input {
+	logger.ChangePackageLogLevel("dht", logger.PanicLevel)
+	inputs.Add("dht_sensor", func() telegraf.Input {
 		return &DhtSensor{
 			DataPin: 4,
 		}
@@ -44,17 +45,13 @@ func (s *DhtSensor) SampleConfig() string {
     # Check your wiring if you are not sure
     data_pin = 4
 
-    # see https://github.com/d2r2/go-dht for the meaning of this one.
-    # TL/DR: play with this parameter    
-    boost_gpio_performance = true
-
     # number of retries in case of a failure
     number_of_retries = 3
     
     # also retry if a sensor returns data outside the sanity range.
     # temperature is specified in degrees celsius.
-    retry_humidity_above = 100
-    retry_temperature_above = 80 
+    retry_humidity_above = 100.0
+    retry_temperature_above = 80.0 
 `
 }
 
@@ -73,13 +70,14 @@ func atoSensorType(s string) (dht.SensorType, error) {
 
 // Gather is the interface for passing metrics to telegraf
 func (n *DhtSensor) Gather(acc telegraf.Accumulator) error {
+
 	sensorType, err := atoSensorType(n.Sensor)
 	if err != nil {
 		return err
 	}
 
 	for i := 0; i < n.Retries; i++ {
-		temperature, humidity, _, err := dht.ReadDHTxxWithRetry(sensorType, n.DataPin, n.BoostGpioPerformance, n.Retries)
+		temperature, humidity, _, err := dht.ReadDHTxxWithRetry(sensorType, n.DataPin, false, n.Retries)
 		if err != nil {
 			return err
 		}
