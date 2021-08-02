@@ -2,6 +2,7 @@ package dht_sensor
 
 import (
 	"fmt"
+	"strings"
 	// sensor imports:
 	"github.com/d2r2/go-dht"
 	// telegraf imports:
@@ -57,13 +58,25 @@ func (s *DhtSensor) SampleConfig() string {
 `
 }
 
-func atoSensorType(s string) dht.SensorType {
-	return dht.DHT22
+func atoSensorType(s string) (dht.SensorType, error) {
+	switch strings.ToUpper(s) {
+	case "DHT11":
+		return dht.DHT11, nil
+	case "DHT12":
+		return dht.DHT12, nil
+	case "DHT22":
+		return dht.DHT22, nil
+	}
+
+	return -1, fmt.Errorf("Unknown sensor type: %s", s)
 }
 
 // Gather is the interface for passing metrics to telegraf
 func (n *DhtSensor) Gather(acc telegraf.Accumulator) error {
-	sensorType := atoSensorType(n.Sensor)
+	sensorType, err := atoSensorType(n.Sensor)
+	if err != nil {
+		return err
+	}
 
 	for i := 0; i < n.Retries; i++ {
 		temperature, humidity, _, err := dht.ReadDHTxxWithRetry(sensorType, n.DataPin, n.BoostGpioPerformance, n.Retries)
