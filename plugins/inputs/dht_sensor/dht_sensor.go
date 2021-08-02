@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 	// sensor imports:
-	"github.com/d2r2/go-dht"
 	logger "github.com/d2r2/go-logger"
+	"github.com/iAnatoly/go-dht" // use my own fork of 	"github.com/d2r2/go-dht"
 	// telegraf imports:
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
