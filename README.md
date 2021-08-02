@@ -42,9 +42,20 @@ git clone
 
 ```bash
 $ go build -o dht_sensor cmd/main.go
-# or, if you need to cross-compile for arm, because you are collecting the data from Raspberry Pi probes:
-$ env GOOS=linux GOARCH=arm GOARM=7 go build -o dht_sensor.arm7 cmd/main.go
 ```
+
+NOTE: if you are building for Raspbery PI, you need to either:
+1. Build it on the Raspberry Pi device itself, or
+2. Cross-compile. 
+
+Usually (2) should be quite simple, but go-dht library has a portion of the code implemented in C, so you will need to install a cross compiler for ARM, and cross-compile using the following:
+``` 
+$ sudo apt install gcc-10-arm-linux-gnueabi
+$ env CC=arm-linux-gnueabi-gcc-10 CGO_ENABLED=1  GOOS=linux GOARCH=arm GOARM=7 go build -o dht_sensor.arm7 cmd/main.go
+```
+(notice the extra CC and CGO_ENABLED variables in addition to regular Go cross-compile flags).
+It is probably easier to compile directly on RPi, but some peopel do not like to install DEV dependencies in production. 
+
 * Edit the config
 * Copy the binary and the config to an appropriate location
 ```bash
