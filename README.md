@@ -47,13 +47,13 @@ NOTE: if you are building for Raspbery PI, you need to either:
 Usually (2) should be quite simple, but go-dht library has a portion of the code implemented in C, so you will need to install a cross compiler for ARM, and cross-compile using the following:
 ``` bash
 # compile the module for amd64.
-$ go build -o net_irtt.amd64 cmd/main.go
+$ go build -o dht_sensor.amd64 cmd/main.go
 
 # install the debian package for cross-compilation
 $ sudo apt install gcc-10-arm-linux-gnueabi
 
 # compile for ARM64 (RPi4)
-$ env GOOS=linux GOARCH=arm64 go build -o net_irtt.arm64 cmd/main.go
+$ env GOOS=linux GOARCH=arm64 go build -o dht_sensor.arm64 cmd/main.go
 
 # compile for ARMv7l (RPI3b)
 $ env CC=arm-linux-gnueabi-gcc-10 CGO_ENABLED=1  GOOS=linux GOARCH=arm GOARM=7 go build -o dht_sensor.armv7l cmd/main.go
