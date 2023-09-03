@@ -49,17 +49,19 @@ Usually (2) should be quite simple, but go-dht library has a portion of the code
 # compile the module for amd64.
 $ go build -o dht_sensor.amd64 cmd/main.go
 
-# install the debian package for cross-compilation
-$ sudo apt install gcc-10-arm-linux-gnueabi
+# install the debian package for cross-compilation. 
+# You may need a different arch (i.e. eabi instead of eabihf) depending on your target HW or OS.
+# Debian Bookworm on RPi3 needs as eabihf, while Bullseye was fine with eabi.
+$ sudo apt install gcc-10-arm-linux-gnueabihf
 
 # compile for ARM64 (RPi4)
 $ env GOOS=linux GOARCH=arm64 go build -o dht_sensor.arm64 cmd/main.go
 
 # compile for ARMv7l (RPI3b)
-$ env CC=arm-linux-gnueabi-gcc-10 CGO_ENABLED=1  GOOS=linux GOARCH=arm GOARM=7 go build -o dht_sensor.armv7l cmd/main.go
+$ env CC=arm-linux-gnueabihf-gcc-10 CGO_ENABLED=1  GOOS=linux GOARCH=arm GOARM=7 go build -o dht_sensor.armv7l cmd/main.go
 
 # compile for ARMv6l (RPI Zero)
-$ env CC=arm-linux-gnueabi-gcc-10 CGO_ENABLED=1  GOOS=linux GOARCH=arm GOARM=6 go build -o dht_sensor.armv6l cmd/main.go
+$ env CC=arm-linux-gnueabihf-gcc-10 CGO_ENABLED=1  GOOS=linux GOARCH=arm GOARM=6 go build -o dht_sensor.armv6l cmd/main.go
 
 ```
 (notice the extra CC and CGO_ENABLED variables required for ARM6/7 in addition to regular Go cross-compile flags).
